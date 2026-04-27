@@ -45,6 +45,87 @@
         margin-bottom: 1.25rem;
         text-shadow: 0 2px 10px #000;
       }
+      .header-audio-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        margin-bottom: 1.25rem;
+      }
+      .header-audio-row .monthsary-header {
+        margin-bottom: 0;
+      }
+      .audio-btn {
+        border: 1.5px solid #a02843;
+        background: linear-gradient(120deg, #2c0023 65%, #3c0918 100%);
+        color: #ffd2d6;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        box-shadow: 0 2px 10px rgba(60, 0, 30, 0.35);
+        transition: transform 0.2s ease, filter 0.2s ease;
+      }
+      .audio-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      .audio-btn:active {
+        transform: translateY(0);
+      }
+      .audio-btn.is-playing {
+        color: #ff8eaa;
+        border-color: #c41f50;
+      }
+      .audio-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 30;
+      }
+      .audio-modal.show {
+        display: flex;
+      }
+      .audio-modal-content {
+        width: min(92vw, 340px);
+        background: rgba(30, 10, 20, 0.96);
+        border: 1.5px solid #a02843;
+        border-radius: 1rem;
+        box-shadow: 0 8px 30px rgba(44, 0, 36, 0.6);
+        padding: 1rem 1rem 0.9rem;
+        text-align: center;
+        color: #ffd2d6;
+        font-family: 'Quicksand', sans-serif;
+      }
+      .audio-modal-text {
+        margin-bottom: 0.9rem;
+        font-size: 0.98rem;
+      }
+      .audio-modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.55rem;
+      }
+      .audio-modal-btn {
+        border: 1.5px solid #a02843;
+        background: linear-gradient(120deg, #2c0023 65%, #3c0918 100%);
+        color: #ffd2d6;
+        border-radius: 0.7rem;
+        padding: 0.4rem 0.9rem;
+        cursor: pointer;
+        font-family: 'Quicksand', sans-serif;
+      }
+      .audio-modal-btn:hover {
+        filter: brightness(1.08);
+      }
       .message-area {
         min-height: 5rem;
         border-radius: 1rem;
@@ -394,8 +475,13 @@
   <body>
     <div class="monthsary-scene">
       <div class="monthsary-container">
-        <div class="monthsary-header">
-          Happy 8th Monthsary, My Love 🖤
+        <div class="header-audio-row">
+          <div class="monthsary-header">
+            Happy 8th Monthsary, My Love 🖤
+          </div>
+          <button class="audio-btn" id="audioToggleBtn" type="button" aria-label="Play background music" title="Play music">
+            ▶
+          </button>
         </div>
         <div class="message-area">
           <em>Hello my love... Happy 8th Monthsary <3 </em>
@@ -409,7 +495,7 @@
             I know that we dont always see eye to eye and i think that  fine, were both still learning so many things about eachother and how to love eachother in the ways we want it
             life and love will always bring about challenges to help us grow and improve, im grateful that I have you with me to face those challenges and know that you have me and my undending support with you always my love.
             <br>
-            I hope you can forgive me for making mistakes at times, im truly trying my hardest to love and treat you right, im stil learning and need to improve on so many things my love.
+            I hope you can forgive me for making mistakes at times, im truly trying my hardest to love and treat you right, im still learning and need to improve on so many things my love.
           </em>
           <br>
           <em>
@@ -444,5 +530,81 @@
         <div class="item"><img src="images/roll.png" alt="Roll" /></div>
       </div>
     </div>
+    <audio id="monthsaryAudio" preload="none">
+      <source src="Month8.m4a" type="audio/mp4" />
+    </audio>
+    <div class="audio-modal" id="audioWarningModal" role="dialog" aria-modal="true" aria-labelledby="audioWarningText">
+      <div class="audio-modal-content">
+        <div class="audio-modal-text" id="audioWarningText">warning maybe loud audio</div>
+        <div class="audio-modal-actions">
+          <button class="audio-modal-btn" id="audioModalPlayBtn" type="button">Play</button>
+          <button class="audio-modal-btn" id="audioModalCloseBtn" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      const audioToggleBtn = document.getElementById("audioToggleBtn");
+      const monthsaryAudio = document.getElementById("monthsaryAudio");
+      const audioWarningModal = document.getElementById("audioWarningModal");
+      const audioModalPlayBtn = document.getElementById("audioModalPlayBtn");
+      const audioModalCloseBtn = document.getElementById("audioModalCloseBtn");
+      let hasAcceptedAudioWarning = false;
+
+      function showAudioWarningModal() {
+        audioWarningModal.classList.add("show");
+      }
+
+      function hideAudioWarningModal() {
+        audioWarningModal.classList.remove("show");
+      }
+
+      audioToggleBtn.addEventListener("click", () => {
+        const source = monthsaryAudio.querySelector("source");
+        if (!source || !source.getAttribute("src")) {
+          alert("Add your MP3 path in the audio source first.");
+          return;
+        }
+
+        if (monthsaryAudio.paused) {
+          if (!hasAcceptedAudioWarning) {
+            showAudioWarningModal();
+            return;
+          }
+          monthsaryAudio.play();
+        } else {
+          monthsaryAudio.pause();
+        }
+      });
+
+      audioModalPlayBtn.addEventListener("click", () => {
+        hasAcceptedAudioWarning = true;
+        hideAudioWarningModal();
+        monthsaryAudio.play();
+      });
+
+      audioModalCloseBtn.addEventListener("click", () => {
+        hideAudioWarningModal();
+      });
+
+      audioWarningModal.addEventListener("click", (event) => {
+        if (event.target === audioWarningModal) {
+          hideAudioWarningModal();
+        }
+      });
+
+      monthsaryAudio.addEventListener("play", () => {
+        audioToggleBtn.textContent = "❚❚";
+        audioToggleBtn.classList.add("is-playing");
+        audioToggleBtn.setAttribute("aria-label", "Pause background music");
+        audioToggleBtn.setAttribute("title", "Pause music");
+      });
+
+      monthsaryAudio.addEventListener("pause", () => {
+        audioToggleBtn.textContent = "▶";
+        audioToggleBtn.classList.remove("is-playing");
+        audioToggleBtn.setAttribute("aria-label", "Play background music");
+        audioToggleBtn.setAttribute("title", "Play music");
+      });
+    </script>
   </body>
 </html>
